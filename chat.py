@@ -1,6 +1,7 @@
 import requests
 import json
 import os
+import io
 import record_voice
 import wave
 import pyaudio
@@ -23,7 +24,7 @@ def post_synthesis(audio_query_response: dict) -> bytes:
     )
     return res.content
 #再生する
-def play_wavfile(mavfile: bytes)
+def play_wavfile(wav_file: bytes):
     wr:wave.Wave_read = wave.open(io.BytesIO(wav_file))
     p = pyaudio.PyAudio()
     stream = p.open(
@@ -34,6 +35,9 @@ def play_wavfile(mavfile: bytes)
     )
     chunk = 1024
     data = wr.readframes(chunk)
+    while data:
+        stream.write(data)
+        data = wr.readframes(chunk)
     #最後を少し何もしないで終わるようにする
     stream.close()
     p.terminate()
